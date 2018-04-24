@@ -5,13 +5,13 @@ from utils import *
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-unitlist = row_units + column_units + square_units
 
 # TODO: Update the unit list to add the new diagonal units
-upward_diagonals = [ rows[nr]+cols[nr] for nr in range( len( rows ) ) ]
-reversed_diagonals = [ rows[nr]+cols[::-1][nr] for nr in range( len( rows ) ) ]
-diagonal_units = upward_diagonals+reversed_diagonals
-unitlist = unitlist + diagonal_units
+reversed_diagonal = [ rows[nr]+cols[::-1][nr] for nr in range( len( rows ) ) ]
+upward_diagonal = [ rows[nr]+cols[nr] for nr in range( len( rows ) ) ]
+
+unitlist = row_units + column_units + square_units + [ upward_diagonal, reversed_diagonal ]
+
 
 
 # Must be called after all units (including diagonals) are added to the unitlist
@@ -52,7 +52,38 @@ def naked_twins(values):
     strategy repeatedly).
     """
     # TODO: Implement this function!
-    raise NotImplementedError
+
+    # Function to check for twinness
+    # Twin found if:
+    # the boxes match eachother
+    # we are not checking the box against itself
+    # the length is two ( since twins are per definition 2 integers )
+    def istwin( one, two ):
+        return True if values[ one ] == values[ two ] and one != two and len( values[ one ] ) == 2 else False
+
+    # Loop through individual units since twins only exist in the same unit
+    for unit in unitlist:
+        # Create a place to store twins
+        twins = []
+        # Loop through every box in the unit
+        for box in unit:
+            # For every box, loop through all boxes in this square
+            for compare in unit:
+                if istwin( box, compare ): twins.append( [ box, compare ] )
+
+        # Staying within the current unit, eliminate instances of the matched integers from peers
+        # Run through the twins
+        for twin in twins:
+            # if values[twin[0]] == values[twin[1]] and len(values[twin[0]]) == 2: #sanity check?:
+            # Run through all boxes in the current unit
+            for box in unit:
+                # Remove instances of the integers in the twin from the boxes
+                for integer in values[twin[0]]:
+                    if box not in twin:
+                        values[box] = values[box].replace( integer, '' )
+
+    return values
+
 
 
 def eliminate(values):
