@@ -8,7 +8,10 @@ square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','45
 unitlist = row_units + column_units + square_units
 
 # TODO: Update the unit list to add the new diagonal units
-unitlist = unitlist
+upward_diagonals = [ rows[nr]+cols[nr] for nr in range( len( rows ) ) ]
+reversed_diagonals = [ rows[nr]+cols[::-1][nr] for nr in range( len( rows ) ) ]
+diagonal_units = upward_diagonals+reversed_diagonals
+unitlist = unitlist + diagonal_units
 
 
 # Must be called after all units (including diagonals) are added to the unitlist
@@ -154,8 +157,8 @@ def search(values):
     and extending it to call the naked twins strategy.
     """
     # TODO: Copy your code from the classroom to complete this function
-    def search(values):
-    "Using depth-first search and propagation, try all possible values."
+
+    # "Using depth-first search and propagation, try all possible values."
     # First, reduce the puzzle using the previous function
     values = reduce_puzzle(values)
     if values is False:
